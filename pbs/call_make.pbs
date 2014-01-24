@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=8,walltime=30:00:00
+#PBS -N awash_rad
+#PBS -M cmb433@nyu.edu
+#PBS -m abe
+#PBS -e localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+# Call with qsub -t ${NUM_INDIVIDUALS} call_make.pbs
+
+working_dir=/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only
+
+module load jdk/1.7.0
+
+# ------------------------------------------------------------------------------
+# Run pipeline
+# ------------------------------------------------------------------------------
+
+cd $working_dir
+
+THIS_IND=`awk "NR==$PBS_ARRAYID" data/individual_list.txt`
+
+echo "Starting Make for individual $THIS_IND";
+
+# To just test:
+# make --just-print -s -f full_analysis.mk indiv IND_ID=${THIS_IND}
+
+make -s -f full_analysis.mk indiv IND_ID=${THIS_IND}
+
+echo "Finished Make";
+
+exit;

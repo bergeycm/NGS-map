@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# RADseq pipeline is called as a make file. 
+# This compares a single individual
+# Input data must be specified by editing config.mk
+
+make -s -f full_analysis.mk indiv
