@@ -1,6 +1,6 @@
 # -------------------------------------------------------------------------------------- #
-# --- Makefile to run RADseq pipeline. 
-# --- Called by the executable shell script, full_analysis
+# --- Makefile to run NGS-map pipeline. 
+# --- Called by the executable shell script, indiv_analysis
 # -------------------------------------------------------------------------------------- #
 
 # Get user editable variables
@@ -58,15 +58,12 @@ snp_calling_steps : local_realign_targets local_realign call_snps filter_snps ge
 # ---
 merge_vcfs : results/merged.flt.vcf
 get_merged_snp_stats : reports/merged.flt.vcf.stats.txt
-make_re_bed : reports/${GENOME_CODE}_${ENZYME}_RADtags.bed
-get_rad_counts : reports/${GENOME_CODE}_${ENZYME}_RAD_coverage.txt
-analyze_rad_cov : reports/${GENOME_CODE}_${ENZYME}_RAD_summary.txt
 
 # Steps for individuals
 indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps 
 
 # Steps for group
-compare : merge_vcfs get_merged_snp_stats make_re_bed get_rad_counts analyze_rad_cov
+compare : merge_vcfs get_merged_snp_stats
 
 SHELL_EXPORT := 
 
@@ -360,33 +357,6 @@ results/merged.flt.vcf : results/*.bwa.${GENOME_NAME}.passed.realn.flt.vcf ${VCF
 reports/merged.flt.vcf.stats.txt : results/merged.flt.vcf ${VCFTOOLS}/* #scripts/get_snp_stats.sh
 	@echo "# === Getting basic SNPs stats ================================================ #";
 	./scripts/get_snp_stats.sh results/merged.flt.vcf;
-
-# -------------------------------------------------------------------------------------- #
-# --- Find RE sites in genome and generate BED file of these
-# -------------------------------------------------------------------------------------- #
-
-# RAD tag BED depends on RE finder script, genome file, and scripts/make_RE_site_bed.sh
-reports/${GENOME_CODE}_${ENZYME}_RADtags.bed : ${RE_FINDER} ${GENOME_FA}i #scripts/make_RE_site_bed.sh
-	@echo "# === Making BED file of RE sites ============================================= #";
-	./scripts/make_RE_site_bed.sh;
-	
-# -------------------------------------------------------------------------------------- #
-# --- Figure out which RE sites have sequences associated with them
-# -------------------------------------------------------------------------------------- #
-
-# RAD coverage output file depends on BED file, results/*.passed.realn.bam, and scripts/count_restr_enz_reads.sh
-reports/${GENOME_CODE}_${ENZYME}_RAD_coverage.txt : reports/${GENOME_CODE}_${ENZYME}_RADtags.bed results/*.bwa.${GENOME_NAME}.passed.realn.bam #scripts/count_restr_enz_reads.sh
-	@echo "# === Counting RAD tags with reads ============================================ #";
-	./scripts/count_restr_enz_reads.sh;
-
-# -------------------------------------------------------------------------------------- #
-# --- Summarize RAD coverage data
-# -------------------------------------------------------------------------------------- #
-
-# RAD coverage summary depends on RAD coverage file and scripts/analyze_RAD_coverage.R
-reports/${GENOME_CODE}_${ENZYME}_RAD_summary.txt : reports/${GENOME_CODE}_${ENZYME}_RAD_coverage.txt #scripts/analyze_RAD_coverage.R
-	@echo "# === Summarizing RAD tags coverage info ====================================== #";
-	./scripts/analyze_RAD_coverage.R reports/papAnu2_PspXI_RAD_coverage.txt > reports/${GENOME_CODE}_${ENZYME}_RAD_summary.txt;
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #

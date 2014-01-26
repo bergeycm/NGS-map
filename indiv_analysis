@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# RADseq pipeline is called as a make file. 
+# NGS-map pipeline is called as a make file. 
 # This compares a single individual
 # Input data must be specified by editing config.mk
 

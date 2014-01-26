@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #PBS -l nodes=1:ppn=8,walltime=30:00:00
-#PBS -N awash_rad
+#PBS -N ngs-map-make
 #PBS -M cmb433@nyu.edu
 #PBS -m abe
-#PBS -e localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
-#PBS -o localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -e localhost:/scratch/cmb433/papionin_genomes/NGS-map-master/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:/scratch/cmb433/papionin_genomes/NGS-map-master/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
 
 # ------------------------------------------------------------------------------
 # Variables
@@ -13,7 +13,7 @@
 
 # Call with qsub -t ${NUM_INDIVIDUALS} call_make.pbs
 
-working_dir=/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only
+working_dir=/scratch/cmb433/papionin_genomes/NGS-map-master
 
 module load jdk/1.7.0
 

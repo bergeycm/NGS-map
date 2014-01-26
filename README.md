@@ -3,19 +3,17 @@ NGS-map
 
 A general pipeline for mapping next-gen sequencing reads and calling variants
 
-# Information on NGS-map pipeline
-
 ## Quick Start Instructions
 
 Here's the rough outline of how to use these scripts to do a simple mapping analysis. The mapping analysis uses BWA, and the variant calling uses GATK.
 
 * Put uncompressed FASTQ file in folder `data/`
-* Demultiplex reads with `scripts/demultiplex.sh` and/or `scripts/demultiplex_SE.sh`
-    - For each individual:
-        - Edit variables in `config.mk`, especially the variables in "Paths to input files"
-        - Call the individual analysis Makefile via the shell script by running `sh indiv_analysis`
-    - When all individuals have been processed\:
-        - Call the comparative analysis Makefile via the shell script by running `sh compare_analysis`
+    - Demultiplex reads with `scripts/demultiplex.sh` and/or `scripts/demultiplex_SE.sh`
+* For each individual:
+    - Edit variables in `config.mk`, especially the variables in "Paths to input files"
+    - Call the individual analysis Makefile via the shell script by running `sh indiv_analysis`
+* When all individuals have been processed\:
+    - Call the comparative analysis Makefile via the shell script by running `sh compare_analysis`
 
 ---
 
