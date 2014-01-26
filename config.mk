@@ -13,6 +13,7 @@ IND_ID=P_trog
 
 # Paths to input reads files
 # Must be in FASTQ format and end in '.fastq'
+# or in gzip'd FASTQ format and end in '.fastq.gz'
 # FastQC will not name the output file properly if ending is '.fq'
 READ1=./data/${IND_ID}.read1.fastq
 READ2=./data/${IND_ID}.read2.fastq
