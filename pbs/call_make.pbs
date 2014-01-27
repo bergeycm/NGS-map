@@ -17,6 +17,9 @@ working_dir=/scratch/cmb433/papionin_genomes/NGS-map-master
 
 module load jdk/1.7.0
 
+# This points to VcfStats.pm
+export PERL5LIB=$PERL5LIB:/home/cmb433/exome_macaque/bin/vcftools_0.1.9/perl
+
 # ------------------------------------------------------------------------------
 # Run pipeline
 # ------------------------------------------------------------------------------
