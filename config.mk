@@ -37,18 +37,18 @@ GENOME_NAME=human
 # --- Paths to external programs
 # -------------------------------------------------------------------------------------- #
 
-FASTQC=/home/cmb433/exome_macaque/bin/FastQC
-FASTX=/home/cmb433/exome_macaque/bin/fastx
-BWA=/home/cmb433/exome_macaque/bin/bwa-0.6.2
-SAMTOOLS=/home/cmb433/exome_macaque/bin/samtools
-BEDTOOLS=/home/cmb433/exome_macaque/bin/BEDTools-Version-2.13.4/bin
-LIFTOVER=/home/cmb433/exome_macaque/bin/liftover
-PICARD=/home/cmb433/exome_macaque/bin/picard-tools-1.77
-BAMTOOLS=/home/cmb433/exome_macaque/bin/bamtools/bin
-GATK=/home/cmb433/exome_macaque/bin/GATK
-BCFTOOLS=/home/cmb433/exome_macaque/bin/samtools/bcftools
-VCFTOOLS=/home/cmb433/exome_macaque/bin/vcftools_0.1.9/bin
-TABIX=/home/cmb433/exome_macaque/bin/tabix-0.2.6
+FASTQC=~/bin/FastQC
+FASTX=~/bin/fastx
+BWA=~/bin/bwa-0.6.2
+SAMTOOLS=~/bin/samtools
+BEDTOOLS=~/bin/BEDTools-Version-2.13.4/bin
+LIFTOVER=~/bin/liftover
+PICARD=~/bin/picard-tools-1.77
+BAMTOOLS=~/bin/bamtools/bin
+GATK=~/bin/GATK
+BCFTOOLS=~/bin/samtools/bcftools
+VCFTOOLS=~/bin/vcftools_0.1.9/bin
+TABIX=~/bin/tabix-0.2.6
 
 # -------------------------------------------------------------------------------------- #
 # --- Parameters for external programs
