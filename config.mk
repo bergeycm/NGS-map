@@ -63,6 +63,11 @@ SNP_MAX_COV=100
 MAPQUAL=20
 # Should we mark duplicates? TRUE or FALSE
 MARK_DUPS=TRUE
+# Max number of file handles to keep open when Picard's MarkDuplicates writes to disk.
+# This should be a bit lower than the per-process max number of files that can be open.
+# You can find that max using command 'ulimit -n'
+# This avoids the "java.io.FileNotFoundException: (Too many open files)" exception
+PICARD_MARK_DUP_MAX_FILES=4000
 
 # -------------------------------------------------------------------------------------- #
 # --- Parameters for multi-sample SNP calling
