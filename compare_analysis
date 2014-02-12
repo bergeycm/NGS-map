@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# RADseq pipeline is called as a make file. 
+# NGS-map pipeline is called as a make file. 
 # This compares multiple individuals after each has been processed by calling indiv_analysis
 # Input data must be specified by editing config.mk
 

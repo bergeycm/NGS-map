@@ -50,19 +50,21 @@ get_snp_stats : reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vc
 #call_consensus : results/${IND_ID}.bwa.${GENOME_NAME}.consensus.fq.gz
 
 # Group steps together
+# --- Individual steps
 preliminary_steps : index_genome
 pre_aln_analysis_steps : fastqc
 alignment_steps : align sampe_or_samse sam2bam sort_and_index_bam get_alignment_stats
 post_alignment_filtering_steps : fix_mate_pairs filter_unmapped add_read_groups filter_bad_qual
 snp_calling_steps : local_realign_targets local_realign call_snps filter_snps get_snp_stats #call_consensus
-# ---
-merge_vcfs : results/merged.flt.vcf
-get_merged_snp_stats : reports/merged.flt.vcf.stats.txt
 
 # Steps for individuals
 indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps 
 
-# Steps for group
+# --- Inter-individual comparison steps
+merge_vcfs : results/${GENOME_NAME}.merged.flt.vcf
+get_merged_snp_stats : reports/${GENOME_NAME}.merged.flt.vcf.stats.txt
+
+# Steps for inter-individual comparison
 compare : merge_vcfs get_merged_snp_stats
 
 SHELL_EXPORT := 
@@ -336,7 +338,25 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz : results/${IND_ID_
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
-# --- Summary steps to be run when all individuals are finished
+# --- Coverage calculations
+# -------------------------------------------------------------------------------------- #
+# ====================================================================================== #
+
+# -------------------------------------------------------------------------------------- #
+# --- Calculate coverage of targeted regions
+# -------------------------------------------------------------------------------------- #
+
+# ====================================================================================== #
+# ====================================================================================== #
+# =====                                                                            ===== #
+# ============= Summary steps to be run when all individuals are finished: ============= #
+# =====                                                                            ===== #
+# ====================================================================================== #
+# ====================================================================================== #
+
+# ====================================================================================== #
+# -------------------------------------------------------------------------------------- #
+# --- Merge and summarize individually-called SNPs
 # -------------------------------------------------------------------------------------- #
 # ====================================================================================== #
 
@@ -345,7 +365,7 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz : results/${IND_ID_
 # -------------------------------------------------------------------------------------- #
 
 # Merged VCF depends on individual VCFs, VCFtools, and scripts/merge_vcf.sh
-results/merged.flt.vcf : results/*.bwa.${GENOME_NAME}.passed.realn.flt.vcf ${VCFTOOLS}/* #scripts/merge_vcf.sh
+results/${GENOME_NAME}.merged.flt.vcf : results/*.bwa.${GENOME_NAME}.passed.realn.flt.vcf ${VCFTOOLS}/* #scripts/merge_vcf.sh
 	@echo "# === Merging individual VCF SNP files ======================================== #";
 	./scripts/merge_vcf.sh;
 
@@ -354,62 +374,32 @@ results/merged.flt.vcf : results/*.bwa.${GENOME_NAME}.passed.realn.flt.vcf ${VCF
 # -------------------------------------------------------------------------------------- #
 
 # File of SNP stats depends on VCF file, VCFtools, and scripts/get_snp_stats.sh
-reports/merged.flt.vcf.stats.txt : results/merged.flt.vcf ${VCFTOOLS}/* #scripts/get_snp_stats.sh
+reports/${GENOME_NAME}.merged.flt.vcf.stats.txt : results/${GENOME_NAME}.merged.flt.vcf ${VCFTOOLS}/* #scripts/get_snp_stats.sh
 	@echo "# === Getting basic SNPs stats ================================================ #";
-	./scripts/get_snp_stats.sh results/merged.flt.vcf;
+	./scripts/get_snp_stats.sh results/${GENOME_NAME}.merged.flt.vcf;
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
-# --- Multi-sample SNP calling with GATK
+# --- Multi-sample SNP calling and SNP filtration with GATK
 # -------------------------------------------------------------------------------------- #
 # ====================================================================================== #
 
 # -------------------------------------------------------------------------------------- #
-# --- Figure out how to partition GATK jobs (e.g. by chromosome)
+# --- Perform multi-sample SNP-calling
 # -------------------------------------------------------------------------------------- #
-
-# Dummy text files depend on *.fai genome index
-	# Make dummy text files, one per line in *.fai genome index
-
-# -------------------------------------------------------------------------------------- #
-# --- Call UnifiedGenotyper
-# -------------------------------------------------------------------------------------- #
-
-# *.raw.snps.indels.vcf depends on *.dummy.file 
-	# UnifiedGenotyper as in call_gatk_genotyper.pbs
 
 # -------------------------------------------------------------------------------------- #
 # --- Filter variants for quality
 # -------------------------------------------------------------------------------------- #
 
-# chr${i}.flt.vcf depends on *.raw.snps.indels.vcf
-	# VariantFiltration
-
-# -------------------------------------------------------------------------------------- #
-# --- Keep only SNPs that pass our controls
-# -------------------------------------------------------------------------------------- #
-
-# chr${i}.pass.snp.vcf depends on
-	# SelectVariants
-	# touch some marker file (SV_done_marker)
-
 # -------------------------------------------------------------------------------------- #
 # --- Merge SNP files together
 # -------------------------------------------------------------------------------------- #
-
-# big merged VCF depends on SV_done_marker
-	# Merge (chromosomal) VCF files
 
 # -------------------------------------------------------------------------------------- #
 # --- Convert to plink's PED format
 # -------------------------------------------------------------------------------------- #
 
-# PED file depends on merged VCF
-	# Convert to PED
-
 # -------------------------------------------------------------------------------------- #
 # --- Make binary PED file
 # -------------------------------------------------------------------------------------- #
-
-# Binary PED depends on PED file
-	# Convert to binary PED

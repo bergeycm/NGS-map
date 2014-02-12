@@ -10,6 +10,6 @@ ALL_VCF_GZ=$(ls results/*.bwa.${GENOME_NAME}.passed.realn.flt.vcf.gz)
 
 ${VCFTOOLS}/vcf-merge \
 	${ALL_VCF_GZ} \
-	> results/merged.flt.vcf
+	> results/${GENOME_NAME}.merged.flt.vcf
 
 exit;
