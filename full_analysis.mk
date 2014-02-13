@@ -354,6 +354,11 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz : results/${IND_ID_
 # --- Calculate coverage of targeted regions
 # -------------------------------------------------------------------------------------- #
 
+# PBS file to do this step, split by chromosome, exists. 
+# Modify variables in script, then call with something like:
+# 	qsub -t 1-21 pbs/gatk_DoC.pbs
+# where 1-21 represents 20 chromosomes, plus X
+
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
 # --- Merge and summarize individually-called SNPs
@@ -388,13 +393,25 @@ reports/${GENOME_NAME}.merged.flt.vcf.stats.txt : results/${GENOME_NAME}.merged.
 # --- Perform multi-sample SNP-calling
 # -------------------------------------------------------------------------------------- #
 
+# PBS file to do this step, split by chromosome, exists. 
+# Modify variables in script, then call with something like:
+# 	qsub -t 1-21 pbs/call_gatk_genotyper.pbs
+# where 1-21 represents 20 chromosomes, plus X
+
 # -------------------------------------------------------------------------------------- #
 # --- Filter variants for quality
 # -------------------------------------------------------------------------------------- #
 
+# PBS file to do this step, split by chromosome, exists. 
+# Modify variables in script, then call with something like:
+# 	qsub -t 1-20 pbs/filter_gatk_snps.pbs
+# where 1-20 represents 20 chromosomes, without X in this case
+
 # -------------------------------------------------------------------------------------- #
 # --- Merge SNP files together
 # -------------------------------------------------------------------------------------- #
+
+#${VCFTOOLS}/vcf-concat ${GENOME_NAME}_snps/*.pass.snp.vcf | gzip -c > ${GENOME_NAME}.pass.snp.vcf.gz
 
 # -------------------------------------------------------------------------------------- #
 # --- Convert to plink's PED format
