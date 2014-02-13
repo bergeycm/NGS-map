@@ -2,27 +2,27 @@
 
 #PBS -l nodes=1:ppn=8,walltime=40:00:00
 #PBS -N filter_gatk_snps
-#PBS -M cmb433@nyu.edu
 #PBS -m abe
-#PBS -e localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
-#PBS -o localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
 
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
 
-working_dir=/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only
+working_dir=$PBS_O_WORKDIR
 
 module load jdk/1.7.0
 
+GATK=~/exome_macaque/bin/GATK
+GENOME_FA=genomes/papAnu2/papAnu2.fa
+GENOME_NAME=baboon
+
 # ------------------------------------------------------------------------------
-# Run pipeline
+# Run Program
 # ------------------------------------------------------------------------------
 
 cd $working_dir
-
-GATK=~/exome_macaque/bin/GATK
-GENOME_FA=genomes/papAnu2/papAnu2.fa
 
 if [ "$PBS_ARRAYID" -eq 21 ]; then
 	CHROM=X
@@ -33,8 +33,8 @@ fi
 java -Xmx2g -jar ${GATK}/GenomeAnalysisTK.jar \
 	-R ${GENOME_FA} \
 	-T VariantFiltration \
-	-o chr${CHROM}.flt.vcf \
-	--variant chr${CHROM}.raw.snps.indels.vcf \
+	-o ${GENOME_NAME}_snps/chr${CHROM}.flt.vcf \
+	--variant ${GENOME_NAME}_snps/chr${CHROM}.raw.snps.indels.vcf \
 	--filterExpression "QD < 2.0" \
 	--filterName "QDfilter" \
 	--filterExpression "MQ < 40.0" \
@@ -53,8 +53,8 @@ java -Xmx2g -jar ${GATK}/GenomeAnalysisTK.jar \
 java -jar ${GATK}/GenomeAnalysisTK.jar \
 	-T SelectVariants \
 	-R ${GENOME_FA} \
-	--variant chr${CHROM}.flt.vcf \
+	--variant ${GENOME_NAME}_snps/chr${CHROM}.flt.vcf \
 	--select_expressions "vc.isNotFiltered() && vc.isSNP()" \
-	-o chr${CHROM}.pass.snp.vcf
+	-o ${GENOME_NAME}_snps/chr${CHROM}.pass.snp.vcf
 
 exit;

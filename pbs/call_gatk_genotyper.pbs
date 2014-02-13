@@ -2,27 +2,27 @@
 
 #PBS -l nodes=1:ppn=8,walltime=40:00:00
 #PBS -N gatk_genotype
-#PBS -M cmb433@nyu.edu
 #PBS -m abe
-#PBS -e localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
-#PBS -o localhost:/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
 
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
 
-working_dir=/scratch/cmb433/awash_ddrad/rad-seq-primate-read-only
+working_dir=$PBS_O_WORKDIR
 
 module load jdk/1.7.0
 
+GATK=~/exome_macaque/bin/GATK
+GENOME_FA=genomes/papAnu2/papAnu2.fa
+GENOME_NAME=baboon
+
 # ------------------------------------------------------------------------------
-# Run pipeline
+# Run program
 # ------------------------------------------------------------------------------
 
 cd $working_dir
-
-GATK=~/exome_macaque/bin/GATK
-GENOME_FA=genomes/papAnu2/papAnu2.fa
 
 if [ "$PBS_ARRAYID" -eq 21 ]; then
 	CHROM=X
@@ -30,7 +30,7 @@ else
 	CHROM=$PBS_ARRAYID
 fi
 
-BAMS=(`ls results/*.PE.bwa.baboon.passed.realn.bam`)
+BAMS=(`ls results/*.PE.bwa.${GENOME_NAME}.passed.realn.bam`)
 
 count=0
 for b in ${BAMS[*]}; do
@@ -38,13 +38,16 @@ for b in ${BAMS[*]}; do
 	count=`expr $count + 1`
 done
 
+# Make output directory
+mkdir ${GENOME_NAME}_snps
+
 java -jar ${GATK}/GenomeAnalysisTK.jar \
 	-T UnifiedGenotyper \
 	-R ${GENOME_FA} \
 	${BAMS[*]} \
 	-stand_call_conf 50.0 \
 	-stand_emit_conf 10.0 \
-	-o chr${CHROM}.raw.snps.indels.vcf \
+	-o ${GENOME_NAME}_snps/chr${CHROM}.raw.snps.indels.vcf \
 	-nct 4 \
 	-nt 8 \
 	-L chr${CHROM}

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=8,walltime=5:00:00
+#PBS -N gatk_DoC
+#PBS -m abe
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+working_dir=$PBS_O_WORKDIR
+
+module load jdk/1.7.0
+
+GATK=~/exome_macaque/bin/GATK
+GENOME_FA=genomes/papAnu2/papAnu2.fa
+GENOME_NAME=baboon
+
+# ------------------------------------------------------------------------------
+# Run program
+# ------------------------------------------------------------------------------
+
+cd $working_dir
+
+if [ "$PBS_ARRAYID" -eq 21 ]; then
+	CHROM=X
+else
+	CHROM=$PBS_ARRAYID
+fi
+
+BAMS=(`ls results/*.PE.bwa.${GENOME_NAME}.passed.realn.bam`)
+
+count=0
+for b in ${BAMS[*]}; do
+	BAMS[$count]="-I "$b" "
+	count=`expr $count + 1`
+done
+
+# Make output directory
+mkdir results/DoC
+
+java -Xmx2g -jar ${GATK}/GenomeAnalysisTK.jar \                                                                                                                       
+	-R ${GENOME_FA} \                                                                                                                                             
+	-T DepthOfCoverage \                                                                                                                                          
+	-o results/DoC/DoC.${GENOME_CODE}.chr${CHROM}.txt \                                                                                                           
+	${BAMS[*]} \                                                                                                                                                  
+	-L chr${CHROM} \                                                                                                                                              
+	--omitDepthOutputAtEachBase \                                                                                                                                 
+	-ct 5 -ct 10 -ct 20
+
+exit;
+
