@@ -47,7 +47,7 @@ local_realign : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.bam re
 call_snps : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.raw.bcf
 filter_snps : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf
 get_snp_stats : reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf.stats.txt
-#call_consensus : results/${IND_ID}.bwa.${GENOME_NAME}.consensus.fq.gz
+call_consensus : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz
 
 # Group steps together
 # --- Individual steps
@@ -55,7 +55,7 @@ preliminary_steps : index_genome
 pre_aln_analysis_steps : fastqc
 alignment_steps : align sampe_or_samse sam2bam sort_and_index_bam get_alignment_stats
 post_alignment_filtering_steps : fix_mate_pairs filter_unmapped add_read_groups filter_bad_qual
-snp_calling_steps : local_realign_targets local_realign call_snps filter_snps get_snp_stats #call_consensus
+snp_calling_steps : local_realign_targets local_realign call_snps filter_snps get_snp_stats call_consensus
 
 # Steps for individuals
 indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps 
@@ -328,7 +328,7 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf.stats.txt : re
 	./scripts/get_snp_stats.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf;
 
 # -------------------------------------------------------------------------------------- #
-# --- Call consensus sequence - Currently turned off
+# --- Call consensus sequence
 # -------------------------------------------------------------------------------------- #
 
 # Consensus sequence depends on realigned BAM, SAMtools, BCFtools, and scripts/call_consensus.sh
