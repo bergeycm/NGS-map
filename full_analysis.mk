@@ -61,11 +61,14 @@ snp_calling_steps : local_realign_targets local_realign call_snps filter_snps ge
 indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps 
 
 # --- Inter-individual comparison steps
+calc_coverage : results/DoC/DoC.${GENOME_NAME}.chr1.sample_summary
 merge_vcfs : results/${GENOME_NAME}.merged.flt.vcf
 get_merged_snp_stats : reports/${GENOME_NAME}.merged.flt.vcf.stats.txt
+multi_sample_snp_call : ${GENOME_NAME}_snps/chr1.raw.snps.indels.vcf
+multi_sample_snp_filter : ${GENOME_NAME}_snps/chr1.pass.snp.vcf
 
 # Steps for inter-individual comparison
-compare : merge_vcfs get_merged_snp_stats
+compare : calc_coverage merge_vcfs get_merged_snp_stats multi_sample_snp_call multi_sample_snp_filter
 
 SHELL_EXPORT := 
 
@@ -359,6 +362,11 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz : results/${IND_ID_
 # 	qsub -t 1-21 pbs/gatk_DoC.pbs
 # where 1-21 represents 20 chromosomes, plus X
 
+# Last output file of coverage calculation depends on BAM files and GATK
+results/DoC/DoC.${GENOME_NAME}.chr1.sample_summary : results/*.PE.bwa.${GENOME_NAME}.passed.realn.bam ${GATK}/*
+	@echo "# === Calculating Depth of Coverage =========================================== #";
+	./scripts/gatk_DoC_serial.sh
+
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
 # --- Merge and summarize individually-called SNPs
@@ -398,6 +406,11 @@ reports/${GENOME_NAME}.merged.flt.vcf.stats.txt : results/${GENOME_NAME}.merged.
 # 	qsub -t 1-21 pbs/call_gatk_genotyper.pbs
 # where 1-21 represents 20 chromosomes, plus X
 
+# Last raw SNP file depends on BAM files and GATK
+${GENOME_NAME}_snps/chr1.raw.snps.indels.vcf : results/*.PE.bwa.${GENOME_NAME}.passed.realn.bam ${GATK}/*
+	@echo "# === Performing multi-sample SNP calling ===================================== #";
+	./scripts/call_gatk_genotyper_serial.sh
+
 # -------------------------------------------------------------------------------------- #
 # --- Filter variants for quality
 # -------------------------------------------------------------------------------------- #
@@ -406,6 +419,11 @@ reports/${GENOME_NAME}.merged.flt.vcf.stats.txt : results/${GENOME_NAME}.merged.
 # Modify variables in script, then call with something like:
 # 	qsub -t 1-20 pbs/filter_gatk_snps.pbs
 # where 1-20 represents 20 chromosomes, without X in this case
+
+# Last filtered SNP file depends on unfiltered SNP files and GATK
+${GENOME_NAME}_snps/chr1.pass.snp.vcf : ${GENOME_NAME}_snps/chr*.raw.snps.indels.vcf ${GATK}/*
+	@echo "# === Filtering multi-sample SNPs ============================================= #";
+	./scripts/filter_gatk_snps_serial.sh
 
 # -------------------------------------------------------------------------------------- #
 # --- Merge SNP files together
