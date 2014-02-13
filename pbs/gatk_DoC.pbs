@@ -44,7 +44,7 @@ mkdir results/DoC
 java -Xmx2g -jar ${GATK}/GenomeAnalysisTK.jar \                                                                                                                       
 	-R ${GENOME_FA} \                                                                                                                                             
 	-T DepthOfCoverage \                                                                                                                                          
-	-o results/DoC/DoC.${GENOME_CODE}.chr${CHROM}.txt \                                                                                                           
+	-o results/DoC/DoC.${GENOME_NAME}.chr${CHROM} \                                                                                                           
 	${BAMS[*]} \                                                                                                                                                  
 	-L chr${CHROM} \                                                                                                                                              
 	--omitDepthOutputAtEachBase \                                                                                                                                 
