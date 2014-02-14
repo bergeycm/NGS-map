@@ -62,13 +62,16 @@ indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_
 
 # --- Inter-individual comparison steps
 calc_coverage : results/DoC/DoC.${GENOME_NAME}.chr1.sample_summary
-merge_vcfs : results/${GENOME_NAME}.merged.flt.vcf
-get_merged_snp_stats : reports/${GENOME_NAME}.merged.flt.vcf.stats.txt
+#merge_vcfs : results/${GENOME_NAME}.merged.flt.vcf
+#get_merged_snp_stats : reports/${GENOME_NAME}.merged.flt.vcf.stats.txt
 multi_sample_snp_call : ${GENOME_NAME}_snps/chr1.raw.snps.indels.vcf
 multi_sample_snp_filter : ${GENOME_NAME}_snps/chr1.pass.snp.vcf
+merge_multi_sample_snps : ${GENOME_NAME}.pass.snp.vcf.gz
+vcf2ped : ${GENOME_NAME}.pass.snp.ped
+binary_ped : ${GENOME_NAME}.pass.snp.bed
 
 # Steps for inter-individual comparison
-compare : calc_coverage merge_vcfs get_merged_snp_stats multi_sample_snp_call multi_sample_snp_filter
+compare : calc_coverage multi_sample_snp_call multi_sample_snp_filter merge_multi_sample_snps vcf2ped binary_ped
 
 SHELL_EXPORT := 
 
@@ -369,12 +372,12 @@ results/DoC/DoC.${GENOME_NAME}.chr1.sample_summary : results/*.PE.bwa.${GENOME_N
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
-# --- Merge and summarize individually-called SNPs
+# --- Merge and summarize individually-called SNPs - Currently skipped
 # -------------------------------------------------------------------------------------- #
 # ====================================================================================== #
 
 # -------------------------------------------------------------------------------------- #
-# --- Merge VCF files from individual SNP calling
+# --- Merge VCF files from individual SNP calling - Currently skipped
 # -------------------------------------------------------------------------------------- #
 
 # Merged VCF depends on individual VCFs, VCFtools, and scripts/merge_vcf.sh
@@ -383,7 +386,7 @@ results/${GENOME_NAME}.merged.flt.vcf : results/*.bwa.${GENOME_NAME}.passed.real
 	./scripts/merge_vcf.sh;
 
 # -------------------------------------------------------------------------------------- #
-# --- Get stats on merged VCF
+# --- Get stats on merged VCF - Currently skipped
 # -------------------------------------------------------------------------------------- #
 
 # File of SNP stats depends on VCF file, VCFtools, and scripts/get_snp_stats.sh
@@ -429,12 +432,28 @@ ${GENOME_NAME}_snps/chr1.pass.snp.vcf : ${GENOME_NAME}_snps/chr*.raw.snps.indels
 # --- Merge SNP files together
 # -------------------------------------------------------------------------------------- #
 
-#${VCFTOOLS}/vcf-concat ${GENOME_NAME}_snps/*.pass.snp.vcf | gzip -c > ${GENOME_NAME}.pass.snp.vcf.gz
+# Merged SNP file depends on chromosomal filtered SNP files
+${GENOME_NAME}.pass.snp.vcf.gz : ${GENOME_NAME}_snps/*.pass.snp.vcf
+	@echo "# === Merging multi-sample SNPs =============================================== #";
+	${VCFTOOLS}/vcf-concat ${GENOME_NAME}_snps/*.pass.snp.vcf | gzip -c > ${GENOME_NAME}.pass.snp.vcf.gz
 
 # -------------------------------------------------------------------------------------- #
-# --- Convert to plink's PED format
+# --- Convert to plink's PED format. Also edit MAP file.
 # -------------------------------------------------------------------------------------- #
 
+# PED file depends merged SNP VCF file
+${GENOME_NAME}.pass.snp.ped : ${GENOME_NAME}.pass.snp.vcf.gz
+	@echo "# === Converting VCF file to PED ============================================== #";
+	${VCFTOOLS}/vcftools --gzvcf ${GENOME_NAME}.pass.snp.vcf.gz --plink --out ${GENOME_NAME}.pass.snp;
+	# Edit the MAP file (${GENOME_NAME}.pass.snp.map) and get rid of the "chr"
+	# VCF uses, e.g., "chr10" whereas plink wants just "10"
+	sed -i -e 's/^chr//' ${GENOME_NAME}.pass.snp.map
+
 # -------------------------------------------------------------------------------------- #
-# --- Make binary PED file
+# --- Convert the PED to a binary PED file, and make FAM files, etc.
 # -------------------------------------------------------------------------------------- #
+
+# Binary PED file depends PED file
+${GENOME_NAME}.pass.snp.bed : ${GENOME_NAME}.pass.snp.ped
+	@echo "# === Making binary PED file ================================================== #";
+	${PLINK}/plink --noweb --file ${GENOME_NAME}.pass.snp --make-bed --out ${GENOME_NAME}.pass.snp

@@ -49,6 +49,7 @@ GATK=~/bin/GATK
 BCFTOOLS=~/bin/samtools/bcftools
 VCFTOOLS=~/bin/vcftools_0.1.9/bin
 TABIX=~/bin/tabix-0.2.6
+PLINK=~/bin/plink-1.07-x86_64
 
 # -------------------------------------------------------------------------------------- #
 # --- Parameters for external programs
