@@ -47,7 +47,6 @@ java -Xmx2g -jar ${GATK}/GenomeAnalysisTK.jar \
 	-o results/DoC/DoC.${GENOME_NAME}.chr${CHROM} \                                                                                                           
 	${BAMS[*]} \                                                                                                                                                  
 	-L chr${CHROM} \                                                                                                                                              
-	--omitDepthOutputAtEachBase \                                                                                                                                 
 	-ct 5 -ct 10 -ct 20
 
 exit;

@@ -35,7 +35,6 @@ while [ $CHROM_ITER -lt 22 ]; do
 		-o results/DoC/DoC.${GENOME_NAME}.chr${CHROM} \                                                                                                           
 		${BAMS[*]} \                                                                                                                                                  
 		-L chr${CHROM} \                                                                                                                                              
-		--omitDepthOutputAtEachBase \                                                                                                                                 
 		-ct 5 -ct 10 -ct 20
 
 	let CHROM_ITER=CHROM_ITER+1 
