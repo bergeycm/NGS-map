@@ -47,7 +47,7 @@ PICARD=~/bin/picard-tools-1.77
 BAMTOOLS=~/bin/bamtools/bin
 GATK=~/bin/GATK
 BCFTOOLS=~/bin/samtools/bcftools
-VCFTOOLS=~/bin/vcftools_0.1.9/bin
+VCFTOOLS=~/bin/vcftools_0.1.12a
 TABIX=~/bin/tabix-0.2.6
 PLINK=~/bin/plink-1.07-x86_64
 
@@ -58,7 +58,7 @@ PLINK=~/bin/plink-1.07-x86_64
 # BWA parameters
 BWA_ALN_PARAM=-t 8
 # SAMtools mpileup parameters
-SNP_MIN_COV=3
+SNP_MIN_COV=5
 SNP_MAX_COV=100
 # BAMtools filter parameters
 MAPQUAL=20
