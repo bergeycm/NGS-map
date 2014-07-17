@@ -17,3 +17,6 @@ results/plate*.bwa.*.sam.bam.sorted.bam.bai
 results/plate*.bwa.*.consensus.fq.gz
 results/plate*.read1.bwa.*.sai
 results/plate*.read2.bwa.*.sai
+results/DoC/DoC.*.chr[0-9]
+results/DoC/DoC.*.chr[0-9][0-9]
+results/DoC/DoC.*.chrX
