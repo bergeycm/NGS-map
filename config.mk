@@ -33,6 +33,16 @@ GENOME_CODE=$(notdir $(basename $(GENOME_FA)))
 # Common name of genome (used to name files)
 GENOME_NAME=human
 
+# Should results be uploaded to AWS S3? TRUE or FALSE
+DO_S3_UPLOAD=FALSE
+
+# AWS S3 bucket name for project - location to upload results
+# - Unique name, 3 to 63 characters
+# - One or more labels, separated by periods
+# - Can contain lowercase letters, numbers, and hyphens
+# - Labels must start and end with a lowercase letter or a number.
+S3_PROJECT_BUCKET_NAME=pretend-project-results-bucket-name
+
 # -------------------------------------------------------------------------------------- #
 # --- Paths to external programs
 # -------------------------------------------------------------------------------------- #

@@ -49,6 +49,8 @@ call_snps : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.raw.bcf
 filter_snps : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf
 get_snp_stats : reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf.stats.txt
 call_consensus : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz
+# --- archive_steps
+compress_and_upload : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.tar.gz
 
 # Group steps together
 # --- Individual steps
@@ -57,9 +59,10 @@ pre_aln_analysis_steps : fastqc
 alignment_steps : align sampe_or_samse sam2bam sort_and_index_bam get_alignment_stats
 post_alignment_filtering_steps : fix_mate_pairs filter_unmapped add_read_groups filter_bad_qual
 snp_calling_steps : local_realign_targets local_realign call_snps filter_snps get_snp_stats call_consensus
+archive_steps : compress_and_upload
 
 # Steps for individuals
-indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps 
+indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps archive_steps
 
 # --- Inter-individual comparison steps
 calc_coverage : results/DoC/DoC.${GENOME_NAME}.chr1.sample_summary
@@ -353,6 +356,21 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf.stats.txt : re
 results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.bam ${SAMTOOLS}/* ${BCFTOOLS}/* #scripts/call_consensus.sh
 	@echo "# === Calling consensus sequence ============================================== #";
 	./scripts/call_consensus.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.bam ${GENOME_FA} ${GENOME_NAME};
+
+# ====================================================================================== #
+# -------------------------------------------------------------------------------------- #
+# --- Archiving steps
+# -------------------------------------------------------------------------------------- #
+# ====================================================================================== #
+
+# -------------------------------------------------------------------------------------- #
+# --- Compress and optionally upload results files
+# -------------------------------------------------------------------------------------- #
+
+# Compressed archive depends on last results file
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.tar.gz : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf.gz.tbi
+	@echo "# === Compressing and optionally uploading results ============================ #";
+	./scripts/compress_copy_results_s3.sh
 
 # ====================================================================================== #
 # ====================================================================================== #
