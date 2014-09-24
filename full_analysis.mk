@@ -368,7 +368,7 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz : results/${IND_ID_
 # -------------------------------------------------------------------------------------- #
 
 # Compressed archive depends on last results file
-results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.tar.gz : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf.gz.tbi
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.tar.gz : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.flt.vcf
 	@echo "# === Compressing and optionally uploading results ============================ #";
 	./scripts/compress_copy_results_s3.sh
 
