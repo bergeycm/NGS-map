@@ -17,16 +17,16 @@ GENOME_FA=$2
 
 echo "${SAMTOOLS}/samtools mpileup \
 	-C50 \
-	-Auf ${GENOME_FA} \
+	-ugf ${GENOME_FA} \
 	${IN_BAM}  | \
-	${BCFTOOLS}/bcftools view -bvcg - \
+	${BCFTOOLS}/bcftools call -vmO b \
 	> ${OUT_BCF}";
 
 ${SAMTOOLS}/samtools mpileup \
 	-C50 \
-	-Auf ${GENOME_FA} \
+	-ugf ${GENOME_FA} \
 	${IN_BAM}  | \
-	${BCFTOOLS}/bcftools view -bvcg - \
+	${BCFTOOLS}/bcftools call -vmO b \
 	> ${OUT_BCF}
 
 exit;
