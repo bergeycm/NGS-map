@@ -18,6 +18,7 @@ IND_ID_W_PE_SE = ${IND_ID}.${READ_TYPE}
 # Steps. Can be called one-by-one with something like, make index_genome
 # --- preliminary_steps
 index_genome : ${GENOME_FA}i ${_BWA_INDEX}
+make_dict : $(subst .fa,.dict,${GENOME_FA})
 # --- pre_aln_analysis_steps:
 ifeq ($(READ_TYPE),SE)
     fastqc : reports/${IND_ID}.readSE.stats.zip
@@ -51,7 +52,7 @@ call_consensus : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.consensus.fq.gz
 
 # Group steps together
 # --- Individual steps
-preliminary_steps : index_genome
+preliminary_steps : index_genome make_dict
 pre_aln_analysis_steps : fastqc
 alignment_steps : align sampe_or_samse sam2bam sort_and_index_bam get_alignment_stats
 post_alignment_filtering_steps : fix_mate_pairs filter_unmapped add_read_groups filter_bad_qual
@@ -102,6 +103,15 @@ ${GENOME_FA}i : ${GENOME_FA} #${BWA}/* ${SAMTOOLS}/* #scripts/index_genome.sh
 # See for details:
 # http://www.cmcrossroads.com/ask-mr-make/12908-rules-with-multiple-outputs-in-gnu-make
 ${_BWA_INDEX} : ${GENOME_FA}i
+
+# -------------------------------------------------------------------------------------- #
+# --- Make *.dict file
+# -------------------------------------------------------------------------------------- #
+
+# *.dict file depends on genome FASTA file
+$(subst .fa,.dict,${GENOME_FA}) : ${GENOME_FA}
+	@echo "# === Making *.dict file ====================================================== #";
+	java -jar ${PICARD}/CreateSequenceDictionary.jar R=$< O=$@
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
