@@ -10,7 +10,7 @@ module load jdk/1.7.0
 
 CHROM_ITER=1
 
-while [ $CHROM_ITER -lt 21 ]; do
+while [ $CHROM_ITER -lt 22 ]; do
 	
 	if [ "$CHROM_ITER" -eq 21 ]; then
 		CHROM=X
