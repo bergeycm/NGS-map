@@ -75,9 +75,10 @@ vcf2ped : ${GENOME_NAME}.pass.snp.ped
 binary_ped : ${GENOME_NAME}.pass.snp.bed
 chrX_to_plink : ${GENOME_NAME}.chrX.pass.snp.bed
 add_chrX : ${GENOME_NAME}.withX.pass.snp.bed
+archive_multi_sample : results/multi-sample.bwa.${GENOME_NAME}.tar.gz
 
 # Steps for inter-individual comparison
-compare : calc_coverage multi_sample_snp_call multi_sample_snp_filter merge_multi_sample_snps vcf2ped binary_ped chrX_to_plink add_chrX
+compare : calc_coverage multi_sample_snp_call multi_sample_snp_filter merge_multi_sample_snps vcf2ped binary_ped chrX_to_plink add_chrX archive_multi_sample
 
 SHELL_EXPORT := 
 
@@ -517,3 +518,18 @@ ${GENOME_NAME}.withX.pass.snp.bed : ${GENOME_NAME}_snps/*.pass.snp.vcf
 	sed -i -e 's/^chr//' ${GENOME_NAME}.withX.pass.snp.map
 	# Convert to binary PLINK file
 	${PLINK}/plink --noweb --file ${GENOME_NAME}.withX.pass.snp --make-bed --out ${GENOME_NAME}.withX.pass.snp
+
+# ====================================================================================== #
+# -------------------------------------------------------------------------------------- #
+# --- Archiving steps - Multi-sample SNP calling results
+# -------------------------------------------------------------------------------------- #
+# ====================================================================================== #
+
+# -------------------------------------------------------------------------------------- #
+# --- Compress and optionally upload results files for multi-sample SNP calling
+# -------------------------------------------------------------------------------------- #
+
+# Compressed archive depends on last results file
+results/multi-sample.bwa.${GENOME_NAME}.tar.gz : ${GENOME_NAME}.withX.pass.snp.bed
+	@echo "# === Compressing and optionally uploading (multi-sample) results ============= #";
+	./scripts/compress_copy_results_s3_multi_sample.sh
