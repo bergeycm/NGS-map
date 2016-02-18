@@ -25,7 +25,7 @@ READ_TYPE=PE
 
 # Paths to genomes files
 # Must be in FASTA format
-GENOME_FA=genomes/hg19/hg19.fa
+GENOME_FA=genomes/AgamP4/AgamP4.fa
 
 # Figure out genome code from path to genome FASTA
 GENOME_CODE=$(notdir $(basename $(GENOME_FA)))
@@ -47,19 +47,19 @@ S3_PROJECT_BUCKET_NAME=pretend-project-results-bucket-name
 # --- Paths to external programs
 # -------------------------------------------------------------------------------------- #
 
-FASTQC=~/bin/FastQC
-FASTX=~/bin/fastx
-BWA=~/bin/bwa-0.6.2
-SAMTOOLS=~/bin/samtools
-BEDTOOLS=~/bin/BEDTools-Version-2.13.4/bin
-LIFTOVER=~/bin/liftover
-PICARD=~/bin/picard-tools-1.77
-BAMTOOLS=~/bin/bamtools/bin
-GATK=~/bin/GATK
-BCFTOOLS=~/bin/samtools/bcftools
-VCFTOOLS=~/bin/vcftools_0.1.12a
-TABIX=~/bin/tabix-0.2.6
-PLINK=~/bin/plink-1.07-x86_64
+FASTQC=~/bin/
+FASTX=~/bin/
+BWA=~/bin/
+SAMTOOLS=~/bin/
+BEDTOOLS=~/bin/
+LIFTOVER=~/bin/
+PICARD=~/bin/
+BAMTOOLS=~/bin/
+GATK=~/bin/
+BCFTOOLS=~/bin/
+VCFTOOLS=~/bin/
+TABIX=~/bin/
+PLINK=~/bin/
 
 # -------------------------------------------------------------------------------------- #
 # --- Parameters for external programs
