@@ -27,11 +27,9 @@ else ifeq ($(READ_TYPE),PE)
 endif
 # --- alignment_steps
 ifeq ($(READ_TYPE),SE)
-    align : results/${IND_ID}.readSE.bwa.${GENOME_NAME}.sai
-    sampe_or_samse : results/${IND_ID}.SE.bwa.${GENOME_NAME}.sam
+    align : results/${IND_ID}.SE.bwa.${GENOME_NAME}.sam
 else ifeq ($(READ_TYPE),PE)
-    align : results/${IND_ID}.read1.bwa.${GENOME_NAME}.sai
-    sampe_or_samse : results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam
+    align : results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam
 endif
 sam2bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.sam.bam
 sort_and_index_bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.sam.bam.sorted.bam.bai
@@ -56,7 +54,7 @@ compress_and_upload : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.tar.gz
 # --- Individual steps
 preliminary_steps : index_genome make_dict
 pre_aln_analysis_steps : fastqc
-alignment_steps : align sampe_or_samse sam2bam sort_and_index_bam get_alignment_stats
+alignment_steps : align sam2bam sort_and_index_bam get_alignment_stats
 post_alignment_filtering_steps : fix_mate_pairs filter_unmapped add_read_groups filter_bad_qual
 snp_calling_steps : local_realign_targets local_realign call_snps filter_snps get_snp_stats call_consensus
 archive_steps : compress_and_upload
@@ -148,37 +146,16 @@ reports/${IND_ID}.readSE.stats.zip : ${READ_SE} ${FASTQC}/* #scripts/run_fastqc.
 # --- Align reads to genome with BWA
 # -------------------------------------------------------------------------------------- #
 
-# Alignment output (*.sai) depends on bwa, the reads FASTAs, the genome (index), and align.sh
-# Using the first read as a stand in for the both 
-results/${IND_ID}.read1.bwa.${GENOME_NAME}.sai : ${BWA}/* ${READ1} ${READ2} ${GENOME_FA}i #scripts/align.sh
+# Alignment output (*.sam) depends on bwa, the reads FASTAs, the genome (index), and align.sh
+results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam : ${BWA}/* ${READ1} ${READ2} ${GENOME_FA}i #scripts/align.sh
 	@echo "# === Aligning reads to genome ================================================ #";
 	./scripts/align.sh ${GENOME_FA} ${GENOME_NAME};
 
-# Read 2 depends on read 1
-ifeq ($(READ_TYPE),PE)
-    results/${IND_ID}.read2.bwa.${GENOME_NAME}.sai : results/${IND_ID}.read1.bwa.${GENOME_NAME}.sai
-endif
-
 # Align SE reads
-# Alignment output (*.sai) depends on bwa, the reads FASTAs, the genome (index), and alignSE.sh
-results/${IND_ID}.readSE.bwa.${GENOME_NAME}.sai : ${BWA}/* ${READ_SE} ${GENOME_FA}i #scripts/align.sh
+# Alignment output (*.sam) depends on bwa, the reads FASTAs, the genome (index), and alignSE.sh
+results/${IND_ID}.SE.bwa.${GENOME_NAME}.sam : ${BWA}/* ${READ_SE} ${GENOME_FA}i #scripts/align.sh
 	@echo "# === Aligning SE reads to genome ============================================= #";
 	./scripts/alignSE.sh ${GENOME_FA} ${GENOME_NAME};
-
-# -------------------------------------------------------------------------------------- #
-# --- Run sampe and samse to generate SAM files
-# -------------------------------------------------------------------------------------- #
-
-# sampe output (*.sam) depends on *.sai files and sampe.sh
-# Using the first read as a stand in for the both
-results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam : results/${IND_ID}.read1.bwa.${GENOME_NAME}.sai #scripts/sampe.sh
-	@echo "# === Making SAM file from PE reads =========================================== #";
-	./scripts/sampe.sh ${GENOME_FA} ${GENOME_NAME};
-
-# samse output (*.sam) depends on *.sai file and sampe.sh
-results/${IND_ID}.SE.bwa.${GENOME_NAME}.sam : results/${IND_ID}.readSE.bwa.${GENOME_NAME}.sai #scripts/sampe.sh
-	@echo "# === Making SAM file from SE reads =========================================== #";
-	./scripts/samse.sh ${GENOME_FA} ${GENOME_NAME};
 
 # -------------------------------------------------------------------------------------- #
 # --- Convert SAM file to BAM file

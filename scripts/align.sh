@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # ------------------------------------------------------------------------------
-# --- Align reads to genome with BWA
+# --- Align reads to genome with BWA mem
 # ------------------------------------------------------------------------------
 
 # Check that genome FASTA, and genome code were passed as parameters
@@ -15,24 +15,9 @@ fi
 GENOME_PATH=$(echo $1 | sed 's/.[^.]*$//g')
 GENOME_CODE=$2
 
-echo "CMD: $BWA/bwa aln \
+$BWA/bwa mem \
 	$BWA_ALN_PARAM \
 	$GENOME_PATH \
-	$READ1 > results/${IND_ID}.read1.bwa.${GENOME_CODE}.sai";
-
-$BWA/bwa aln \
-	$BWA_ALN_PARAM \
-	$GENOME_PATH \
-	$READ1 > results/${IND_ID}.read1.bwa.${GENOME_CODE}.sai
-
-echo "CMD: $BWA/bwa aln \
-	$BWA_ALN_PARAM \
-	$GENOME_PATH \
-	$READ2 > results/${IND_ID}.read2.bwa.${GENOME_CODE}.sai";
-
-$BWA/bwa aln \
-	$BWA_ALN_PARAM \
-	$GENOME_PATH \
-	$READ2 > results/${IND_ID}.read2.bwa.${GENOME_CODE}.sai
+	$READ1 $READ2 > results/${IND_ID}.PE.bwa.${GENOME_CODE}.sam
 
 exit;
