@@ -215,8 +215,6 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.txt : results/${IND_ID_W_
 results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.sam.bam.sorted.bam.bai ${PICARD}/* # scripts/fix_mate_pairs.sh
 	@echo "# === Fixing mate pair info =================================================== #";
 	./scripts/fix_mate_pairs.sh ${GENOME_NAME};
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.sam.bam.sorted.bam
 
 # Align stats report depends on the BAM with fixed mate pair info and scripts/get_alignment_stats.sh
 reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.pairsfix.txt : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.bam #scripts/get_alignment_stats.sh
