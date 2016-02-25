@@ -5,25 +5,22 @@
 # ------------------------------------------------------------------------------
 
 # Check that reads file and output directory name were passed as parameters
-USAGE="$0 reads.fq out_dir_name";
-if [ -z "$2" ]; then
+USAGE="$0 reads.fq";
+if [ -z "$1" ]; then
 	echo "ERROR: $USAGE";
 	exit 1;
 fi
 
 READS_FQ=$1
-OUT_FILE=$2
 
-echo "CMD: ${FASTQC}/fastqc ${READS_FQ}";
+echo "CMD: ${FASTQC}/fastqc -t 8 ${READS_FQ}";
 
-${FASTQC}/fastqc ${READS_FQ}
+${FASTQC}/fastqc -t 8 ${READS_FQ}
 
-FQC_OUT=$(echo ${READS_FQ} | sed -e 's/\.[^\.]*$/\_fastqc/' -e 's/\.fastq\_fastqc/\_fastqc/')
+FQC_OUT_PRE=$(echo ${READS_FQ} | sed -e s"/\.fastq\.gz/_fastqc/")
 
 # Move output files into reports directory and rename them
-echo "CMD: mv ${FQC_OUT} reports/${OUT_FILE}";
-mv ${FQC_OUT} reports/${OUT_FILE}
-echo "CMD: mv ${FQC_OUT}.zip reports/${OUT_FILE}.zip";
-mv ${FQC_OUT}.zip reports/${OUT_FILE}.zip
+mv ${FQC_OUT_PRE}.html reports/
+mv ${FQC_OUT_PRE}.zip  reports/
 
 exit;
