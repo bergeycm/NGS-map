@@ -11,7 +11,7 @@
 # Variables
 # ------------------------------------------------------------------------------
 
-# Call with qsub -t ${NUM_INDIVIDUALS} call_make.pbs
+# Call with qsub -t 1-${NUM_INDIVIDUALS} call_make.pbs
 
 working_dir=/scratch/cmb433/papionin_genomes/NGS-map-master
 
