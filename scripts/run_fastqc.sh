@@ -17,7 +17,7 @@ echo "CMD: ${FASTQC}/fastqc -t 8 ${READS_FQ}";
 
 ${FASTQC}/fastqc -t 8 ${READS_FQ}
 
-FQC_OUT_PRE=$(echo ${READS_FQ} | sed -e s"/\.fastq\.gz/_fastqc/")
+FQC_OUT_PRE=$(echo ${READS_FQ} | sed -e s"/\.fastq.*/_fastqc/")
 
 # Move output files into reports directory and rename them
 mv ${FQC_OUT_PRE}.html reports/
