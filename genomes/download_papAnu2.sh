@@ -8,7 +8,7 @@ cd genomes/papAnu2
 GENOME_FA=papAnu2.fa
 
 wget \
-    'ftp://hgdownload.cse.ucsc.edu/goldenPath/papAnu2/bigZips/papAnu2.fa.masked.gz' \
+    'ftp://hgdownload.cse.ucsc.edu/goldenPath/papAnu2/bigZips/papAnu2.fa.gz' \
     -O ${GENOME_FA}.gz
 
 gunzip ${GENOME_FA}.gz
