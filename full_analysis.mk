@@ -23,7 +23,7 @@ make_dict : $(subst .fa,.dict,${GENOME_FA})
 ifeq ($(READ_TYPE),SE)
     fastqc : reports/${IND_ID}.readSE.stats.zip
 else ifeq ($(READ_TYPE),PE)
-    fastqc : reports/${IND_ID}.read1.stats.zip reports/${IND_ID}.read2.stats.zip
+    fastqc : reports/${IND_ID}_R1_fastqc.zip reports/${IND_ID}_R2_fastqc.zip
 endif
 # --- alignment_steps
 ifeq ($(READ_TYPE),SE)

@@ -4,8 +4,8 @@
 #PBS -N ngs-map-make
 #PBS -M cmb433@nyu.edu
 #PBS -m abe
-#PBS -e localhost:/scratch/cmb433/papionin_genomes/NGS-map-master/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
-#PBS -o localhost:/scratch/cmb433/papionin_genomes/NGS-map-master/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
 
 # ------------------------------------------------------------------------------
 # Variables
@@ -13,9 +13,9 @@
 
 # Call with qsub -t 1-${NUM_INDIVIDUALS} call_make.pbs
 
-working_dir=/scratch/cmb433/papionin_genomes/NGS-map-master
+working_dir=$PBS_O_WORKDIR
 
-module load jdk/1.7.0
+module load jdk/1.7.0_60
 
 # This points to VcfStats.pm
 export PERL5LIB=$PERL5LIB:/home/cmb433/exome_macaque/bin/vcftools_0.1.9/perl
