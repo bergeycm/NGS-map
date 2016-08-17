@@ -4,7 +4,7 @@
 # --- Analyze FASTQ file of reads with FASTQC
 # ------------------------------------------------------------------------------
 
-# Check that reads file and output directory name were passed as parameters
+# Check that reads file was passed as parameter
 USAGE="$0 reads.fq";
 if [ -z "$1" ]; then
 	echo "ERROR: $USAGE";
@@ -17,10 +17,9 @@ echo "CMD: ${FASTQC}/fastqc -t 8 ${READS_FQ}";
 
 ${FASTQC}/fastqc -t 8 ${READS_FQ}
 
-FQC_OUT_PRE=$(echo ${READS_FQ} | sed -e s"/\.fastq.*/_fastqc/")
+FQC_OUT_DIR=$(echo ${READS_FQ} | sed -e s"/\.fastq/_fastqc/")
 
 # Move output files into reports directory and rename them
-mv ${FQC_OUT_PRE}.html reports/
-mv ${FQC_OUT_PRE}.zip  reports/
+mv ${FQC_OUT_DIR} reports/
 
 exit;

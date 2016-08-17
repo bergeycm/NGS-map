@@ -23,7 +23,7 @@ make_dict : $(subst .fa,.dict,${GENOME_FA})
 ifeq ($(READ_TYPE),SE)
     fastqc : reports/${IND_ID}.readSE.stats.zip
 else ifeq ($(READ_TYPE),PE)
-    fastqc : reports/${IND_ID}_R1_fastqc.zip reports/${IND_ID}_R2_fastqc.zip
+    fastqc : $(addsuffix _fastqc/fastqc_report.html,$(subst data,reports,$(basename ${READ1} ${READ2})))
 endif
 # --- alignment_steps
 ifeq ($(READ_TYPE),SE)
@@ -126,12 +126,13 @@ $(subst .fa,.dict,${GENOME_FA}) : ${GENOME_FA}
 # -------------------------------------------------------------------------------------- #
 
 # FastQC reports depend on read files, FastQC, and run_fastqc.sh
-reports/${IND_ID}.read1.stats.zip : ${READ1} ${FASTQC}/* #scripts/run_fastqc.sh
-	@echo "# === Analyzing quality of reads (1st pair) before mapping ==================== #";
-	./scripts/run_fastqc.sh ${READ1} ${IND_ID}.read1.stats;
-reports/${IND_ID}.read2.stats.zip : ${READ2} ${FASTQC}/* #scripts/run_fastqc.sh
-	@echo "# === Analyzing quality of reads (2nd pair) before mapping ==================== #";
-	./scripts/run_fastqc.sh ${READ2} ${IND_ID}.read2.stats;
+#$(addsuffix _fastqc/fastqc_report.html,$(subst data,reports,$(basename ${READ1}))) : ${READ1} ${FASTQC}/* scripts/run_fastqc.sh
+#	@echo "# === Analyzing quality of reads (1st pair) before mapping ==================== #";
+#	./scripts/run_fastqc.sh ${READ1}
+
+reports/%_fastqc/fastqc_report.html : data/%.fastq ${FASTQC}/* scripts/run_fastqc.sh
+	@echo "# === Analyzing quality of reads before mapping =============================== #";
+	scripts/run_fastqc.sh $<
 reports/${IND_ID}.readSE.stats.zip : ${READ_SE} ${FASTQC}/* #scripts/run_fastqc.sh
 	@echo "# === Analyzing quality of reads (SE) before mapping ========================== #";
 	./scripts/run_fastqc.sh ${READ_SE} ${IND_ID}.readSE.stats;
