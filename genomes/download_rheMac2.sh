@@ -14,3 +14,10 @@ wget \
 tar -zxvf ${GENOME_FA}.tar.gz
 
 cat `ls -v softMask/chr*.fa | grep -v "chrUr"` > $GENOME_FA
+
+rm -r softMask/
+rm $GENOME_FA.tar.gz
+
+cd ../..
+
+exit
