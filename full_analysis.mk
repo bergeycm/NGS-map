@@ -113,7 +113,7 @@ ${_BWA_INDEX} : ${GENOME_FA}i
 # *.dict file depends on genome FASTA file
 $(subst .fa,.dict,${GENOME_FA}) : ${GENOME_FA}
 	@echo "# === Making *.dict file ====================================================== #";
-	java -jar ${PICARD}/CreateSequenceDictionary.jar R=$< O=$@
+	java -jar ${PICARD}/picard.jar CreateSequenceDictionary R=$< O=$@
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
