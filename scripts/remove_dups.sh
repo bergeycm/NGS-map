@@ -22,7 +22,7 @@ if [ "$MARK_DUPS" = "TRUE" ]; then
 	mkdir -p $TMP_DIR
 
 echo "CMD: java -Djava.io.tmpdir=${TMP_DIR} \
-		-jar ${PICARD}/MarkDuplicates.jar \
+		-jar ${PICARD}/picard.jar MarkDuplicates \
 		INPUT=results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.fixed.filtered.bam \
 		OUTPUT=results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.fixed.filtered.postdup.bam \
 		M=reports/duplicate_report.txt \
@@ -31,7 +31,7 @@ echo "CMD: java -Djava.io.tmpdir=${TMP_DIR} \
 		MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=${PICARD_MARK_DUP_MAX_FILES}";
 
 	java -Djava.io.tmpdir=${TMP_DIR} \
-		-jar ${PICARD}/MarkDuplicates.jar \
+		-jar ${PICARD}/picard.jar MarkDuplicates \
 		INPUT=results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.fixed.filtered.bam \
 		OUTPUT=results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.fixed.filtered.postdup.bam \
 		M=reports/duplicate_report.txt \

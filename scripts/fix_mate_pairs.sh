@@ -24,7 +24,7 @@ if [ "$READ_TYPE" = "PE" ]; then
 	# Then fix mate pair info with Picard:
 	# Also shorten the filename
 	java -Djava.io.tmpdir=${TMP_DIR} \
-		-jar ${PICARD}/FixMateInformation.jar \
+		-jar ${PICARD}/picard.jar FixMateInformation \
 		INPUT= results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.sam.bam.sorted.bam \
 		OUTPUT=results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.fixed.bam \
 		SO=coordinate \
