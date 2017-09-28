@@ -150,7 +150,7 @@ reports/${IND_ID}.readSE.stats.zip : ${READ_SE} ${FASTQC}/* #scripts/run_fastqc.
 # Alignment output (*.sam) depends on bwa, the reads FASTAs, the genome (index), and align.sh
 results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam : ${BWA}/* ${READ1} ${READ2} ${GENOME_FA}i #scripts/align.sh
 	@echo "# === Aligning reads to genome ================================================ #";
-	./scripts/align.sh ${GENOME_FA} ${GENOME_NAME};
+	./scripts/align.sh ${GENOME_FA} ${GENOME_NAME} ${BWA_ALN_OR_MEM};
 
 # Align SE reads
 # Alignment output (*.sam) depends on bwa, the reads FASTAs, the genome (index), and alignSE.sh

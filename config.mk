@@ -44,29 +44,12 @@ DO_S3_UPLOAD=FALSE
 S3_PROJECT_BUCKET_NAME=pretend-project-results-bucket-name
 
 # -------------------------------------------------------------------------------------- #
-# --- Paths to external programs
-# -------------------------------------------------------------------------------------- #
-
-FASTQC=~/bin/
-FASTX=~/bin/
-BWA=~/bin/
-SAMTOOLS=~/bin/
-BEDTOOLS=~/bin/
-LIFTOVER=~/bin/
-PICARD=~/bin/
-BAMTOOLS=~/bin/
-GATK=~/bin/
-BCFTOOLS=~/bin/
-VCFTOOLS=~/bin/
-TABIX=~/bin/
-PLINK=~/bin/
-
-# -------------------------------------------------------------------------------------- #
 # --- Parameters for external programs
 # -------------------------------------------------------------------------------------- #
 
 # BWA parameters
 BWA_ALN_PARAM=-t 8
+BWA_ALN_OR_MEM=mem
 # SAMtools mpileup parameters
 SNP_MIN_COV=5
 SNP_MAX_COV=100
