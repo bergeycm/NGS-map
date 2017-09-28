@@ -18,21 +18,21 @@ echo "### --- Alignment statistics for ${IN_BAM} ----------------------" > $REPO
 
 # Run flagstat
 echo "samtools flagstat:" >> $REPORT
-$SAMTOOLS/samtools flagstat \
+samtools flagstat \
 	$IN_BAM \
 	>> $REPORT
 echo "" >> $REPORT
 
 # Run idxstats
 echo "samtools idxstats:" >> $REPORT
-$SAMTOOLS/samtools idxstats \
+samtools idxstats \
 	$IN_BAM \
 	>> $REPORT
 echo "" >> $REPORT
 
 # Run bamtools stats
 echo "bamtools stats:" >> $REPORT
-$BAMTOOLS/bamtools stats \
+bamtools stats \
 	-insert \
 	-in $IN_BAM \
 	>> $REPORT

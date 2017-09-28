@@ -16,12 +16,14 @@ IN_BAM=$1
 # Sort BAM
 # Output file is *.sorted.bam
 
-echo "CMD: $SAMTOOLS/samtools sort \
+echo "CMD: samtools sort \
 	$IN_BAM \
-	$IN_BAM.sorted";
+	-o $IN_BAM.sorted.bam\
+        --threads 7";
 
-$SAMTOOLS/samtools sort \
+samtools sort \
 	$IN_BAM \
-	$IN_BAM.sorted
+	-o $IN_BAM.sorted.bam \
+        --threads 7
 
 exit;

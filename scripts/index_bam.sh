@@ -15,10 +15,10 @@ IN_BAM=$1
 
 # Index BAM
 
-echo "CMD: $SAMTOOLS/samtools index \
+echo "CMD: samtools index \
 	$IN_BAM;";
 
-$SAMTOOLS/samtools index \
-	$IN_BAM;
+samtools index \
+	$IN_BAM $IN_BAM.bai;
 
 exit;

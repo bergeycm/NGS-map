@@ -56,11 +56,11 @@ preliminary_steps : index_genome make_dict
 pre_aln_analysis_steps : fastqc
 alignment_steps : align sam2bam sort_and_index_bam get_alignment_stats
 post_alignment_filtering_steps : fix_mate_pairs filter_unmapped add_read_groups filter_bad_qual
-snp_calling_steps : local_realign_targets local_realign call_snps filter_snps get_snp_stats call_consensus
+snp_calling_steps : local_realign_targets local_realign #call_snps filter_snps get_snp_stats #call_consensus
 archive_steps : compress_and_upload
 
 # Steps for individuals
-indiv : preliminary_steps pre_aln_analysis_steps alignment_steps post_alignment_filtering_steps snp_calling_steps archive_steps
+indiv : preliminary_steps alignment_steps post_alignment_filtering_steps snp_calling_steps #archive_steps
 
 # --- Inter-individual comparison steps
 calc_coverage : results/DoC/DoC.${GENOME_NAME}.chr1.sample_summary
@@ -181,11 +181,11 @@ results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam.bam.sorted.bam.bai : results/${IND_I
 	@echo "# === Sorting and Indexing PE BAM file ======================================== #";
 	./scripts/sort_bam.sh results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam.bam;
 	./scripts/index_bam.sh results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam.bam.sorted.bam;
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam
-	sh ./scripts/zero_out_file.sh results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam.bam
-	sh ./scripts/zero_out_file.sh ${READ1}
-	sh ./scripts/zero_out_file.sh ${READ2}
+#	# Clear out intermediary files
+#	sh ./scripts/zero_out_file.sh results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam
+#	sh ./scripts/zero_out_file.sh results/${IND_ID}.PE.bwa.${GENOME_NAME}.sam.bam
+#	sh ./scripts/zero_out_file.sh ${READ1}
+#	sh ./scripts/zero_out_file.sh ${READ2}
 
 # Sorted BAM file index depends on unsorted BAM file, scripts/sort_bam, and scripts/index_bam.sh
 results/${IND_ID}.SE.bwa.${GENOME_NAME}.sam.bam.sorted.bam.bai : results/${IND_ID}.SE.bwa.${GENOME_NAME}.sam.bam #scripts/sort_bam scripts/index_bam.sh
@@ -213,7 +213,7 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.txt : results/${IND_ID_W_
 # -------------------------------------------------------------------------------------- #
 
 # BAM with fixed mate pair info depends on output BAM from sort_and_index.sh, Picard, and scripts/fix_mate_pairs.sh
-results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.sam.bam.sorted.bam.bai ${PICARD}/* # scripts/fix_mate_pairs.sh
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.sam.bam.sorted.bam.bai #${PICARD}/* scripts/fix_mate_pairs.sh
 	@echo "# === Fixing mate pair info =================================================== #";
 	./scripts/fix_mate_pairs.sh ${GENOME_NAME};
 
@@ -231,8 +231,8 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam.bai : results/${
 	@echo "# === Filtering unmapped reads ================================================ #";
 	./scripts/filter_mapped_reads_paired.sh ${GENOME_NAME};
 	./scripts/index_bam.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam;
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.bam
+#	# Clear out intermediary files
+#	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.bam
 
 # Align stats report depends on filtered BAM and scripts/get_alignment_stats.sh
 reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.pairsfix.flt.txt : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam.bai #scripts/get_alignment_stats.sh
@@ -244,12 +244,12 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.pairsfix.flt.txt : result
 # -------------------------------------------------------------------------------------- #
 
 # BAM sans dups [index file] depends on output BAM from filtering, Picard, and scripts/remove_dups.sh
-results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam.bai : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam.bai ${PICARD}/* # scripts/remove_dups.sh
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam.bai : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam.bai #${PICARD}/*  scripts/remove_dups.sh
 	@echo "# === Removing duplicate reads mapped ========================================= #";
 	./scripts/remove_dups.sh ${GENOME_NAME};
 	./scripts/index_bam.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam;
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam
+#	# Clear out intermediary files
+#	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.bam
 
 # Align stats report depends on BAM sans dups and scripts/get_alignment_stats.sh
 reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.pairsfix.flt.postdup.txt : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam #scripts/get_alignment_stats.sh
@@ -261,11 +261,11 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.pairsfix.flt.postdup.txt 
 # -------------------------------------------------------------------------------------- #
 
 # BAM without RGs depends on output BAM, Picard, and scripts/add_read_groups.sh
-results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.RG.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam.bai ${PICARD}/* # scripts/add_read_groups.sh
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.RG.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam.bai #${PICARD}/*  scripts/add_read_groups.sh
 	@echo "# === Adding read groups ====================================================== #";
 	./scripts/add_read_groups.sh ${GENOME_NAME};
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam
+#	# Clear out intermediary files
+#	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.postdup.bam
 
 # -------------------------------------------------------------------------------------- #
 # --- Remove reads with low mapping quality
@@ -276,8 +276,8 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.bai : results/${IND_ID_W
 	@echo "# === Filtering low quality reads mapped to genome ============================ #";
 	./scripts/filter_mapped_reads_quality.sh ${GENOME_NAME} ${MAPQUAL};
 	./scripts/index_bam.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam;
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.RG.bam
+#	# Clear out intermediary files
+#	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.fixed.filtered.RG.bam
 
 # Align stats report depends on quality-filtered BAM and scripts/get_alignment_stats.sh
 reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.passed.txt : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.bai #scripts/get_alignment_stats.sh
@@ -295,7 +295,7 @@ reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.passed.txt : results/${IN
 # -------------------------------------------------------------------------------------- #
 
 # List of intervals to realign depends on BAM of reads that passed filtering, GATK, and scripts/local_realign_get_targets.sh
-results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.list : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.bai ${GATK}/* #scripts/local_realign.sh
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.list : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.bai #${GATK}/* scripts/local_realign.sh
 	@echo "# === Identifying intervals in need or local realignment ====================== #";
 	./scripts/local_realign_get_targets.sh ${GENOME_NAME} ${GENOME_FA};
 
@@ -304,11 +304,11 @@ results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.list : results/${IND_ID_
 # -------------------------------------------------------------------------------------- #
 
 # Realigned BAM depends on list of realign targets, BAM of reads that passed filtering, GATK, and scripts/local_realign.sh
-results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.list results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.bai ${GATK}/* #scripts/local_realign.sh
+results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.bam : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.list results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam.bai #${GATK}/* scripts/local_realign.sh
 	@echo "# === Doing local realignment ================================================= #";
 	./scripts/local_realign.sh ${GENOME_NAME} ${GENOME_FA};
-	# Clear out intermediary files
-	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam
+#	# Clear out intermediary files
+#	sh ./scripts/zero_out_file.sh results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.bam
 
 # Align stats report depends on realigned BAM and scripts/get_alignment_stats.sh
 reports/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.aln_stats.passed.realn.txt : results/${IND_ID_W_PE_SE}.bwa.${GENOME_NAME}.passed.realn.bam #scripts/get_alignment_stats.sh
@@ -448,7 +448,7 @@ ${GENOME_NAME}_snps/chr1.raw.snps.indels.vcf : results/*.PE.bwa.${GENOME_NAME}.p
 # where 1-21 represents 20 chromosomes, plus X
 
 # Last filtered SNP file depends on unfiltered SNP files and GATK
-${GENOME_NAME}_snps/chr1.pass.snp.vcf : ${GENOME_NAME}_snps/chr*.raw.snps.indels.vcf ${GATK}/*
+${GENOME_NAME}_snps/chr1.pass.snp.vcf : ${GENOME_NAME}_snps/chr*.raw.snps.indels.vcf #${GATK}/*
 	@echo "# === Filtering multi-sample SNPs ============================================= #";
 	./scripts/filter_gatk_snps_serial.sh
 

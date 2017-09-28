@@ -14,13 +14,13 @@ fi
 INDEX_FAI=$1
 IN_SAM=$2
 
-echo "$SAMTOOLS/samtools view \
+echo "samtools view \
 	-b \
 	-t ${INDEX_FAI} \
 	-o ${IN_SAM}.bam \
 	$IN_SAM";
 
-$SAMTOOLS/samtools view \
+samtools view \
 	-b \
 	-t ${INDEX_FAI} \
 	-o ${IN_SAM}.bam \

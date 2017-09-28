@@ -13,11 +13,11 @@ fi
 
 # Index with BWA. 
 # Output is *.fa.amb *.fa.ann *.fa.bwt *.fa.pac *.fa.sa
-$BWA/bwa index -a bwtsw $1
+bwa index -a bwtsw $1
 
 # Index with samtools. 
 # Output is *.fa.fai
-$SAMTOOLS/samtools faidx $1
+samtools faidx $1
 
 # Rename index files to remove ".fa"
 for file in $1.*; do
