@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=8,walltime=40:00:00
+#PBS -N gatk_HC
+#PBS -m abe
+#PBS -M cxb585@psu.edu
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+# Call with, e.g.:
+# qsub -A open -t 1-233 pbs/call_gatk_haplotypecaller.pbs
+
+working_dir=$PBS_O_WORKDIR
+
+module load gatk
+
+GENOME_FA=genomes/rheMac2/rheMac2.fa
+GENOME_NAME=rhesus
+
+# ------------------------------------------------------------------------------
+# Run program
+# ------------------------------------------------------------------------------
+
+cd $working_dir
+
+THIS_IND=`awk "NR==$PBS_ARRAYID" data/individual_list.txt`
+
+echo "Calling SNPs for individual $THIS_IND"
+
+BAM=results/$THIS_IND.PE.bwa.$GENOME_NAME.passed.realn.bam
+
+java -jar ${GATK}/GenomeAnalysisTK.jar \
+    -T HaplotypeCaller \
+    -R $GENOME_FA \
+    -I $BAM \
+    --emitRefConfidence GVCF \
+    --genotyping_mode DISCOVERY \
+    -nct 8 \
+    -o ${BAM/.bam/.g.vcf}
+
+exit;
