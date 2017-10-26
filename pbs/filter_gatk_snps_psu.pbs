@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=8,walltime=2:00:00
+#PBS -N fltr_gatk_snps
+#PBS -m abe
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+working_dir=$PBS_O_WORKDIR
+
+module load gatk
+
+GENOME_FA=genomes/rheMac2/rheMac2.fa
+GENOME_NAME=rhesus
+
+# ------------------------------------------------------------------------------
+# Run Program
+# ------------------------------------------------------------------------------
+
+cd $working_dir
+
+if [ "$PBS_ARRAYID" -eq 21 ]; then
+	CHROM=X
+else
+	CHROM=$PBS_ARRAYID
+fi
+
+java -Xmx2g -jar ${GATK}/GenomeAnalysisTK.jar \
+    -R ${GENOME_FA} \
+    -T VariantFiltration \
+    -o ${GENOME_NAME}_snps/chr${CHROM}.flt.vcf \
+    --variant ${GENOME_NAME}_snps/chr${CHROM}.raw.snps.indels.vcf \
+    --filterExpression "QD < 2.0" \
+    --filterName "QDfilter" \
+    --filterExpression "MQ < 40.0" \
+    --filterName "MQfilter" \
+    --filterExpression "FS > 60.0" \
+    --filterName "FSfilter" \
+    --filterExpression "MQRankSum < -12.5" \
+    --filterName "MQRSfilter" \
+    --filterExpression "ReadPosRankSum < -8.0" \
+    --filterName "RPRSfilter" \
+    --missingValuesInExpressionsShouldEvaluateAsFailing
+
+# Select variants with "FILTER=PASS" and are SNPs:
+java -jar ${GATK}/GenomeAnalysisTK.jar \
+	-T SelectVariants \
+	-R ${GENOME_FA} \
+	--variant ${GENOME_NAME}_snps/chr${CHROM}.flt.vcf \
+	-select "vc.isNotFiltered() && vc.isSNP()" \
+	-o ${GENOME_NAME}_snps/chr${CHROM}.pass.snp.vcf
+
+exit;
