@@ -434,7 +434,7 @@ reports/${GENOME_NAME}.merged.flt.vcf.stats.txt : results/${GENOME_NAME}.merged.
 # where 1-21 represents 20 chromosomes, plus X
 
 # Last raw SNP file depends on BAM files and GATK
-${GENOME_NAME}_snps/chr1.raw.snps.indels.vcf : results/*.PE.bwa.${GENOME_NAME}.passed.realn.bam ${GATK}/*
+${GENOME_NAME}_snps/chr1.raw.snps.indels.vcf : results/*.PE.bwa.${GENOME_NAME}.passed.realn.bam #${GATK}/*
 	@echo "# === Performing multi-sample SNP calling ===================================== #";
 	./scripts/call_gatk_genotyper_serial.sh
 
@@ -459,7 +459,7 @@ ${GENOME_NAME}_snps/chr1.pass.snp.vcf : ${GENOME_NAME}_snps/chr*.raw.snps.indels
 # Merged SNP file depends on chromosomal filtered SNP files
 ${GENOME_NAME}.pass.snp.vcf.gz : ${GENOME_NAME}_snps/*.pass.snp.vcf
 	@echo "# === Merging multi-sample SNPs (autosomes only) ============================== #";
-	${VCFTOOLS}/vcf-concat ${GENOME_NAME}_snps/chr[0-9]*.pass.snp.vcf | gzip -c > ${GENOME_NAME}.pass.snp.vcf.gz
+	vcf-concat ${GENOME_NAME}_snps/chr[0-9]*.pass.snp.vcf | gzip -c > ${GENOME_NAME}.pass.snp.vcf.gz
 
 # -------------------------------------------------------------------------------------- #
 # --- Convert to plink's PED format. Also edit MAP file.
@@ -468,7 +468,7 @@ ${GENOME_NAME}.pass.snp.vcf.gz : ${GENOME_NAME}_snps/*.pass.snp.vcf
 # PED file depends merged SNP VCF file
 ${GENOME_NAME}.pass.snp.ped : ${GENOME_NAME}.pass.snp.vcf.gz
 	@echo "# === Converting VCF file to PED ============================================== #";
-	${VCFTOOLS}/vcftools --gzvcf ${GENOME_NAME}.pass.snp.vcf.gz --plink --out ${GENOME_NAME}.pass.snp;
+	vcftools --gzvcf ${GENOME_NAME}.pass.snp.vcf.gz --plink --out ${GENOME_NAME}.pass.snp;
 	# Edit the MAP file (${GENOME_NAME}.pass.snp.map) and get rid of the "chr"
 	# VCF uses, e.g., "chr10" whereas plink wants just "10"
 	sed -i -e 's/^chr//' ${GENOME_NAME}.pass.snp.map
@@ -480,7 +480,7 @@ ${GENOME_NAME}.pass.snp.ped : ${GENOME_NAME}.pass.snp.vcf.gz
 # Binary PED file depends on PED file
 ${GENOME_NAME}.pass.snp.bed : ${GENOME_NAME}.pass.snp.ped
 	@echo "# === Making binary PED file ================================================== #";
-	${PLINK}/plink --noweb --file ${GENOME_NAME}.pass.snp --make-bed --out ${GENOME_NAME}.pass.snp
+	plink --file ${GENOME_NAME}.pass.snp --make-bed --out ${GENOME_NAME}.pass.snp
 
 # -------------------------------------------------------------------------------------- #
 # --- Create PED file and binary PED file of just chrX
@@ -489,12 +489,12 @@ ${GENOME_NAME}.pass.snp.bed : ${GENOME_NAME}.pass.snp.ped
 # Chromosome X binary PED file depends on chrX VCF file
 ${GENOME_NAME}.chrX.pass.snp.bed : ${GENOME_NAME}_snps/chrX.pass.snp.vcf
 	@echo "# === Converting chrX VCF file to PED and binary PED ========================== #";
-	${VCFTOOLS}/vcftools --vcf ${GENOME_NAME}_snps/chrX.pass.snp.vcf --plink --out ${GENOME_NAME}.chrX.pass.snp;
+	vcftools --vcf ${GENOME_NAME}_snps/chrX.pass.snp.vcf --plink --out ${GENOME_NAME}.chrX.pass.snp;
 	# Edit the MAP file (${GENOME_NAME}.chrX.pass.snp.map) and get rid of the "chr"
 	# VCF uses, e.g., "chrX" whereas plink wants just "X"
 	sed -i -e 's/^chr//' ${GENOME_NAME}.chrX.pass.snp.map
 	# Now convert PED to binary PED
-	${PLINK}/plink --noweb --file ${GENOME_NAME}.chrX.pass.snp --make-bed --out ${GENOME_NAME}.chrX.pass.snp
+	plink --file ${GENOME_NAME}.chrX.pass.snp --make-bed --out ${GENOME_NAME}.chrX.pass.snp
 
 # -------------------------------------------------------------------------------------- #
 # --- Merge autosomes and chrX to create dataset of autosomes + chrX (PED + BED formats)
@@ -504,13 +504,13 @@ ${GENOME_NAME}.chrX.pass.snp.bed : ${GENOME_NAME}_snps/chrX.pass.snp.vcf
 ${GENOME_NAME}.withX.pass.snp.bed : ${GENOME_NAME}_snps/*.pass.snp.vcf
 	@echo "# === Merging multi-sample SNPs (now with X) ================================== #";
 	# Concatenate VCF files and convert right into PLINK format
-	${VCFTOOLS}/vcf-concat ${GENOME_NAME}_snps/chr*.pass.snp.vcf | \
-		${VCFTOOLS}/vcftools --vcf - --plink --out ${GENOME_NAME}.withX.pass.snp;
+	vcf-concat ${GENOME_NAME}_snps/chr*.pass.snp.vcf | \
+		vcftools --vcf - --plink --out ${GENOME_NAME}.withX.pass.snp;
 	# Edit the MAP file (${GENOME_NAME}.pass.snp.map) and get rid of the "chr"
 	# VCF uses, e.g., "chr10" whereas plink wants just "10"
 	sed -i -e 's/^chr//' ${GENOME_NAME}.withX.pass.snp.map
 	# Convert to binary PLINK file
-	${PLINK}/plink --noweb --file ${GENOME_NAME}.withX.pass.snp --make-bed --out ${GENOME_NAME}.withX.pass.snp
+	plink --file ${GENOME_NAME}.withX.pass.snp --make-bed --out ${GENOME_NAME}.withX.pass.snp
 
 # ====================================================================================== #
 # -------------------------------------------------------------------------------------- #
