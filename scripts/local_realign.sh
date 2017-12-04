@@ -18,7 +18,7 @@ GENOME_FA=$2
 TMP_DIR=tmp/$RANDOM
 mkdir -p $TMP_DIR
 
-java -Xmx4g -Djava.io.tmpdir=${TMP_DIR} \
+java -Xmx24g -Djava.io.tmpdir=${TMP_DIR} \
 	-jar ${GATK}/GenomeAnalysisTK.jar \
 	-I results/${IND_ID_W_PE_SE}.bwa.${GENOME_CODE}.passed.bam \
 	-R ${GENOME_FA} \
