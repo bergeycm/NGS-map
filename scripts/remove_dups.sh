@@ -35,9 +35,6 @@ if [ "$MARK_DUPS" = "TRUE" ]; then
         REMOVE_DUPLICATES=false \
         MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=${PICARD_MARK_DUP_MAX_FILES}
 
-    # Delete temp folder
-    rm -r $TMP_DIR
-
 elif [ "$MARK_DUPS" = "FALSE" ]; then
 
     # Otherwise just copy input file to output
