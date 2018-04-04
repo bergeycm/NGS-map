@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -l nodes=1:ppn=8,walltime=40:00:00
+#PBS -l nodes=1:ppn=20,walltime=96:00:00
 #PBS -N gatk_geno_GVCFs
 #PBS -m abe
 #PBS -M cxb585@psu.edu
@@ -40,6 +40,6 @@ java -jar ${GATK}/GenomeAnalysisTK.jar \
     -R $GENOME_FA \
     ${GVCFS[*]} \
     -o ${GENOME_NAME}_snps/ALL.raw.snps.indels.vcf \
-    -nt 12
+    -nt 20
 
 exit;
