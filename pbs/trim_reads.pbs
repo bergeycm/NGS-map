@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=1,walltime=12:00:00
+#PBS -N trim
+#PBS -M cxb585@psu.edu
+#PBS -m abe
+#PBS -e localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.e${PBS_JOBID}.${PBS_ARRAYID}
+#PBS -o localhost:${PBS_O_WORKDIR}/${PBS_JOBNAME}.o${PBS_JOBID}.${PBS_ARRAYID}
+
+# ------------------------------------------------------------------------------
+# Variables
+# ------------------------------------------------------------------------------
+
+# Call with qsub -t 1-${NUM_INDIVIDUALS} trim_reads.pbs
+
+working_dir=$PBS_O_WORKDIR
+
+# ------------------------------------------------------------------------------
+# Trim sequences
+# ------------------------------------------------------------------------------
+
+cd $working_dir
+
+THIS_IND=`ls data/*R1.fastq.gz | grep -vi TRIM | head -n $PBS_ARRAYID | tail -n1 | sed -e "s:data/\(.*\)_R1.*:\1:"`
+
+echo "Trimming for individual $THIS_IND";
+
+module load trimmomatic/0.36
+
+ADAPTERS=`dirname $TRIMMOMATIC`/adapters/TruSeq2-PE.fa
+
+java -jar $TRIMMOMATIC PE -phred33 \
+    data/${THIS_IND}_R1.fastq.gz \
+    data/${THIS_IND}_R2.fastq.gz \
+    data/${THIS_IND}_TRIM_R1.fastq.gz \
+    data/${THIS_IND}_trim_unpaired_R1.fastq.gz \
+    data/${THIS_IND}_TRIM_R2.fastq.gz \
+    data/${THIS_IND}_trim_unpaired_R2.fastq.gz \
+    ILLUMINACLIP:$ADAPTERS:2:30:10 \
+    LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+
+exit;
