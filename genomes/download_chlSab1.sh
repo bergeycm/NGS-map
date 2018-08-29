@@ -8,7 +8,7 @@ cd genomes/chlSab1
 GENOME_FA=chlSab1.fa
 
 wget \
-    'ftp://ftp.ensembl.org/pub/release-88/fasta/chlorocebus_sabaeus/dna/Chlorocebus_sabaeus.ChlSab1.1.dna_sm.toplevel.fa.gz' \
+    'ftp://ftp.ensembl.org/pub/release-93/fasta/chlorocebus_sabaeus/dna/Chlorocebus_sabaeus.ChlSab1.1.dna_sm.toplevel.fa.gz' \
     -O ${GENOME_FA}.gz
 
 gunzip ${GENOME_FA}.gz
