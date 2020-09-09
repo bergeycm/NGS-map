@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+# ******************************************************************************************
+# NOTE: Standalone version of this script is available at:
+# https://github.com/bergeycm/vcf-tab-to-fasta/
+# ******************************************************************************************
+
 # Program to convert output of VCFtools' vcf-to-tab (modified to only export IUPAC SNPs)
 # to FASTA alignment.
 
@@ -135,7 +140,7 @@ for (my $i = 3; $i < 8; $i++) {
 			$count++;
 		
 		# Missing data
-		} elsif ($nuc eq './') {
+		} elsif ($nuc eq './' || $nuc eq './.') {
 			print '-';
 			$count++;
 		
