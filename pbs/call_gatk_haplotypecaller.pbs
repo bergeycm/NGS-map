@@ -33,13 +33,11 @@ echo "Calling SNPs for individual $THIS_IND"
 
 BAM=results/$THIS_IND.PE.bwa.$GENOME_NAME.passed.realn.bam
 
-java -jar ${GATK}/GenomeAnalysisTK.jar \
-    -T HaplotypeCaller \
+java -jar ${GATK}/gatk-package-4.1.4.0-local.jar \
+    HaplotypeCaller \
     -R $GENOME_FA \
     -I $BAM \
-    --emitRefConfidence GVCF \
-    --genotyping_mode DISCOVERY \
-    -nct 8 \
-    -o ${BAM/.bam/.g.vcf}
+    --ERC GVCF \
+    -O ${BAM/.bam/.g.vcf}
 
 exit;
