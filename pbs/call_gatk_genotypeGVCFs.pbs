@@ -25,28 +25,19 @@ GENOME_NAME=rhesus
 cd $working_dir
 
 if [ "$PBS_ARRAYID" -eq 21 ]; then
-	CHROM=X
+	CHROM=chrX
 else
-	CHROM=$PBS_ARRAYID
+	CHROM=chr$PBS_ARRAYID
 fi
-
-GVCFS=(`ls results/*.PE.bwa.${GENOME_NAME}.passed.realn.g.vcf`)
-
-count=0
-for v in ${GVCFS[*]}; do
-	GVCFS[$count]="--variant $v "
-	count=`expr $count + 1`
-done
 
 # Make output directory
 mkdir -p ${GENOME_NAME}_snps
 
-java -jar ${GATK}/GenomeAnalysisTK.jar \
-    -T GenotypeGVCFs \
+java -Xmx96g -jar ${GATK}/gatk-package-4.1.4.0-local.jar \
+    GenotypeGVCFs \
     -R $GENOME_FA \
-    ${GVCFS[*]} \
-    -o ${GENOME_NAME}_snps/chr${CHROM}.raw.snps.indels.vcf \
-    -nt 8 \
-    -L chr${CHROM}
+    -V gendb://${GENOME_NAME}_snps_$CHROM \
+    -O ${GENOME_NAME}_snps/${CHROM}.raw.snps.indels.vcf \
+    -L ${CHROM}
 
 exit;
